@@ -1,0 +1,41 @@
+﻿@model LeaseIt.Models.Feedback
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h4>Feedback</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <h3>Rate Us!</h3>
+            <div class="rating">
+                <input type="radio" name="rating" value="5" id="5" asp-for="Rating">
+                <label asp-for="Rating" for="5">☆</label>
+                <input type="radio" name="rating" value="4" id="4" asp-for="Rating">
+                <label asp-for="Rating" for="4">☆</label>
+                <input type="radio" name="rating" value="3" id="3" asp-for="Rating">
+                <label asp-for="Rating" for="3">☆</label>
+                <input type="radio" name="rating" value="2" id="2" asp-for="Rating">
+                <label asp-for="Rating" for="2">☆</label>
+                <input type="radio" name="rating" value="1" id="1" asp-for="Rating">
+                <label asp-for="Rating" for="1">☆</label>
+            </div>
+            
+            <div class="form-group">
+                <label asp-for="Comments" class="control-label"></label>
+                <input asp-for="Comments" class="form-control" placeholder="We value your opinion."/>
+                <span asp-validation-for="Comments" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Send" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

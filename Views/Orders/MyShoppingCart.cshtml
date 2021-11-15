@@ -1,0 +1,129 @@
+﻿@using LeaseIt.Data
+@model ShoppingCartViewModel
+
+@{
+    ViewData["Title"] = "Shopping Cart Summary";
+}
+
+<div class="row">
+    <div class="col-md-8 offset-2">
+        <div class="text-center">
+            <h2>Your Shopping Cart Summary</h2>
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Quantity</th>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Subtotal</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach( var item in Model.ShoppingCart.ShoppingCartItems)
+                {
+                <tr>
+                    <td class="align-middle">@item.Amount</td>
+                    <td class="align-middle">@item.Product.ProductName</td>
+                    <td class="align-middle">@item.Product.LeasePrice.ToString("c")</td>
+                    <td class="align-middle">@((item.Amount*item.Product.LeasePrice).ToString("c"))</td>
+                    <td class="align-middle">
+                        <a class="text-center" asp-controller="Orders" asp-action="AddToShoppingCart"
+                           asp-route-id="@item.Product.ProductId"><i class="bi bi-cart-plus"></i></a>
+                        <a class="text-center" asp-controller="Orders" asp-action="RemoveFromShoppingCart"
+                           asp-route-id="@item.Product.ProductId"><i class="bi bi-cart-dash"></i></a>
+                    </td>
+                </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2"></td>
+                    <td><b>Total: </b></td>
+                    <td>
+                        @Model.ShoppingCartTotal.ToString("c")
+                    </td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="plan">
+            <p>Choose your Plan:</p>
+            <form>
+                <div class="radio" style="border: 2px solid black; padding: 2%;">
+                    <label><input type="radio" name="optradio" checked><b>Plan 1</b></label>
+                    <p><strong>Everyday Plan</strong></p>
+                    <p>This Plan costs $55/month. It includes unlimited talk, text and 6GB data.</p>
+                </div>
+                <div class="radio" style="border:2px solid black; padding:2%;">
+                    <label><input type="radio" name="optradio"><b>Plan 2</b></label>
+                    <p><strong>Premium Plan</strong></p>
+                    <p>This Plan will cost $75/month. It includes unlimited talk, text and data.</p>
+                </div>
+            </form>
+        </div>
+
+        <div class="text-right">
+            <div class="btn-group">
+                <div id="paypal-btn"></div>
+                <span style="padding:5px"></span>
+                <a class="btn btn-outline-success" asp-controller="Products" asp-action="List">
+                    Continue Shopping
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{ 
+    
+    <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+    <script>
+
+        let _total = @Html.Raw(Model.ShoppingCartTotal);
+
+        paypal.Button.render({
+            //Configure Environment
+            env: 'sandbox',
+            client: {
+                sandbox: 'AXEWxsQVeYMWnDtI1xd0XJsRi-5RUjMxAyohuO7KfJVdAC0BEhMVR7Eg0E33EVtm9gdKma7sOLhTTDeQ'
+            },
+
+            //Customize the button
+            locale: 'en_US',
+            style: {
+                size: 'small',
+                color: 'gold',
+                shape: 'pill'
+            },
+
+            commit: true,
+
+            //setup a payment
+            payment: function (data, actions) {
+                console.log("Payment setup");
+                return actions.payment.create({
+                    transactions: [{
+                        amount: {
+                            total: _total,
+                            currency: 'CAD'
+                        }
+                    }]
+                });
+            },
+
+            //Execute a payment
+            onAuthorize: function (data, actions) {
+                return actions.payment.execute().then(function () {
+                    var url = '@Url.Action("CompleteOrder", "Orders", new { })';
+                    window.location.href = url;
+
+                });
+            }
+
+        }, '#paypal-btn');
+    </script>
+}
