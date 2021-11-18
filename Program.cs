@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 
 namespace LeaseIt
 {
+    //Author: Nakshi Dudhiya, 000793267
+
     public class Program
     {
         public static void Main(string[] args)

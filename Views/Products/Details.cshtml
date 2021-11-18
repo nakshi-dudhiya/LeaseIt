@@ -19,7 +19,7 @@
                 </div>
                 <div class="col-md-8">
                     <div class="card-body">
-                        <p class="card-text"><b>Description:</b><br/> @Model.Description</p>
+                        <p class="card-text"><b>Description:</b><br /> @Model.Description</p>
                         <p class="card-text"><b>Color: </b>@Model.Color</p>
                         <p class="card-text"><b>Lease Price: </b>@Model.LeasePrice.ToString("c")</p>
                         <p class="card-text"><b>Total Price: </b>@Model.Price.ToString("c")</p>
@@ -30,7 +30,7 @@
                         <p class="card-text">
                             <a class="btn btn-outline-primary float-right" asp-action="List"><i class="bi bi-eye-fill"> Back to List</i></a>
                             <a class="btn btn-success text-white" asp-controller="Orders" asp-action="AddToShoppingCart"
-                            asp-route-Id="@Model.ProductId"><i class="bi bi-cart-plus"> Add to Cart</i></a>
+                               asp-route-Id="@Model.ProductId"><i class="bi bi-cart-plus"> Add to Cart</i></a>
                         </p>
                     </div>
                 </div>
@@ -38,25 +38,3 @@
         </div>
     </div>
 </div>
-@*
-    <div class="thumbnail">
-        <img alt="@Model.ProductName" src="@Model.ImageUrl" />
-        <div class="caption-full">
-            <h3 class="pull-right">@Model.Price</h3>
-            <h3><a href="#">@Model.ProductName</a></h3>
-            <h4>Lease Price: $@Model.LeasePrice/month</h4>
-            <p>@Model.Description</p>
-            <p>Colors : @Model.Color</p>
-        </div>
-    </div>
-    <div class="addToCart">
-        <p class="button">
-            <a class="btn btn-primary" asp-controller="ShoppingCart" asp-action="AddToShoppingCart"
-               asp-route-productId="@Model.ProductId"> Add to Cart
-            </a>
-        </p>
-    </div>
-    <div>
-        <a asp-action="List">Back to List</a>
-    </div>
-*@

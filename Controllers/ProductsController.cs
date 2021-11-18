@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LeaseIt.Data;
 using LeaseIt.Models;
-using LeaseIt.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using LeaseIt.ViewModels;
 
 namespace LeaseIt.Controllers
 {
@@ -17,12 +17,20 @@ namespace LeaseIt.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IProductRepository _productRepository;
         private readonly IBrandRepository _brandRepository;
-        public ProductsController(ApplicationDbContext context, IProductRepository productRepository, 
+
+        public ProductsController(ApplicationDbContext context, IProductRepository productRepository,
             IBrandRepository brandRepository)
         {
             _context = context;
             _productRepository = productRepository;
             _brandRepository = brandRepository;
+        }
+
+        // GET: Products
+        public async Task<IActionResult> Index()
+        {
+            var applicationDbContext = _context.Products.Include(p => p.Brand);
+            return View(await applicationDbContext.ToListAsync());
         }
 
         //Display the list of products
@@ -54,17 +62,8 @@ namespace LeaseIt.Controllers
             productListViewModel.Products = products;
             productListViewModel.CurrentBrand = currentBrand;
 
-            return View("List",productListViewModel);
+            return View("List", productListViewModel);
         }
-
-        // GET: Products
-        [Authorize(Roles ="Admin")]
-        public async Task<IActionResult> Index()
-        {
-            var applicationDbContext = _context.Products.Include(p => p.Brand);
-            return View(await applicationDbContext.ToListAsync());
-        }
-
 
         //Search
         public IActionResult Filter(string searchString)
@@ -76,20 +75,9 @@ namespace LeaseIt.Controllers
                 var filteredResult = productListViewModel.Products.Where(n => n.ProductName.Contains(searchString) ||
                      n.Description.Contains(searchString)).ToList();
                 productListViewModel.Products = filteredResult;
-                return View("List",productListViewModel);
+                return View("List", productListViewModel);
             }
             return View(productListViewModel);
-        }
-
-        // GET: Products/Details/5
-        public IActionResult Details(int id)
-        {
-            var product =  _productRepository.GetProductById(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-            return View(product);
         }
 
         // GET: Products/Details/5
@@ -110,8 +98,28 @@ namespace LeaseIt.Controllers
 
             return View(product);
         }
+
+        // GET: Products/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var product = await _context.Products
+                .Include(p => p.Brand)
+                .FirstOrDefaultAsync(m => m.ProductId == id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
+        }
+
         // GET: Products/Create
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["BrandId"] = new SelectList(_context.Brands, "BrandId", "BrandId");
@@ -137,7 +145,7 @@ namespace LeaseIt.Controllers
         }
 
         // GET: Products/Edit/5
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -191,8 +199,8 @@ namespace LeaseIt.Controllers
             return View(product);
         }
 
-        // GET: Products/Delete/5
         [Authorize(Roles = "Admin")]
+        // GET: Products/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -215,7 +223,6 @@ namespace LeaseIt.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var product = await _context.Products.FindAsync(id);

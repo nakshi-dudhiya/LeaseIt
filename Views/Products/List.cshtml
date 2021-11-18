@@ -9,5 +9,5 @@
 
 @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
 {
-    @await Html.PartialAsync("_CreateItem", "Brands")
+    @await Html.PartialAsync("_CreateItem", "Products")
 }

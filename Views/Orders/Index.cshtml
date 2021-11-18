@@ -42,10 +42,13 @@
                     <td class="align-middle">
                         @order.OrderItems.Select(m => m.Product.LeasePrice * m.Amount).Sum().ToString("c")
                     </td>
-                    <td class="align-middle">
-                       @order.User.FirstName @order.User.LastName
-                    </td>
-                </tr>
+                    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                    {
+                        <td class="align-middle">
+                            @order.User.FirstName @order.User.LastName
+                        </td>
+                    }
+                    </tr>
                 }
             </tbody>
         </table>
